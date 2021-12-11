@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Socket.IO chat</title>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+
+
+    <div class="container">
+        <div class="row clearfix">
+            <div class="col-lg-12">
+                <div class="card chat-app">
+                    <div id="plist" class="people-list">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <a href="/logout" class="btn btn-outline-secondary"><i
+                                    class="fa fa-sign-out"></i></a>
+                            </div>
+                            
+                        </div>
+                        <ul class="list-unstyled chat-list mt-2 mb-0" id="friends" ></ul>
+                            <h4><b> Friends </b></h4>
+                            <% for (let i of userin.friends) { %>
+                                <li class="clearfix">
+                                    
+                                    <div class="about">
+                                        <div class="name"><%= i[0] %></div>
+                                        <a href="/user/<%= i[1] %>"> <button class="btn btn-primary"> Send Message </button></a>
+                                        
+                                        
+                                        <a href="/user/del/<%= i[1] %>?_method=DELETE"><button class="btn btn-danger"> Delete Friend </button></a>
+                                        
+
+                                        <div class="status"> <i class="fa fa-circle offline"></i> left 7 mins ago </div>
+                                    </div>
+                                    </li>
+                             <% } %>   
+                        </ul>
+                        <ul class="list-unstyled chat-list mt-2 mb-0" id="requests" ></ul>
+                            <h4><b> Friend Requests </b></h4>
+                            <% for (let i of userin.requests) { %>
+                                <li class="clearfix">
+                                    
+                                    <div class="about">
+                                        <div class="name"><%= i[0] %></div>
+                                        <a href="/user/<%= i[1] %>"> <button class="btn btn-primary"> Send Message </button></a>
+                                        
+                                        
+                                        <a href="/user/accept/<%= i[1] %>?_method=PUT"><button class="btn btn-danger"> Accept </button></a>
+                                        
+
+                                        <div class="status"> <i class="fa fa-circle offline"></i> left 7 mins ago </div>
+                                    </div>
+                                    </li>
+                             <% } %>   
+                        </ul>
+                        
+                        <ul class="list-unstyled chat-list mt-2 mb-0" id="online" > 
+                            <h4><b> Online Users </b></h4>
+                            <% if (userlist) {%>
+                                <% for (let i of userlist) {%>
+                                    <% if( i[0]!= userin.name) { %>
+                                        <li class="clearfix">
+                                        
+                                        <div class="about">
+                                            <div class="name"><%= i[0] %></div>
+                                            <a href="/user/<%= i[1] %>"> <button class="btn btn-primary"> Send Message </button></a>
+                                            
+                                            
+                                            <a href="/user/add/<%= i[1] %>?_method=PUT"><button class="btn btn-danger"> Add Friend </button></a>
+                                            
+
+                                            <div class="status"> <i class="fa fa-circle offline"></i> left 7 mins ago </div>
+                                        </div>
+                                        </li>
+                                        <% } %>
+                                    <% } %>
+                            <% } %> 
+
+                        </ul>
+                        
+                    </div>
+                    <% if (username != 'none') { %>
+                    <div class="chat">
+                        <div class="chat-header clearfix">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <a href="javascript:void(0);" data-toggle="modal" data-target="#view_info">
+                                        <img src="https://bootdey.com/img/Content/avatar/avatar2.png" alt="avatar">
+                                    </a>
+                                    <div class="chat-about">
+                                        <h6 class="m-b-0" id="username"><%= user.name %></h6>
+                                        <span id="userid" hidden><%= user._id %></span>
+                                        <small></small>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 hidden-sm text-right">
+                                    
+                                    <a href="javascript:void(0);" class="btn btn-outline-primary"><i
+                                            class="fa fa-image"></i></a>
+                                    <a href="javascript:void(0);" class="btn btn-outline-info"><i
+                                            class="fa fa-cogs"></i></a>
+                                    <a href="javascript:void(0);" class="btn btn-outline-warning"><i
+                                            class="fa fa-question"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chat-history">
+                            <ul class="m-b-0" id="message">
+
+                                <% for (let i=0; i<messages.length; i++){%>
+
+                                    <% if (messages[i].sender == userIN){%>
+                                        
+                                            <li class="clearfix">
+                                                <div class="message-data text-right">
+                                                    <span class="message-data-time"><%= messages[i].createdAt %></span>
+                                                    <img src="https://bootdey.com/img/Content/avatar/avatar7.png"
+                                                        alt="avatar">
+                                                </div>
+                                                <div class="message other-message float-right">
+                                                    <%= messages[i].message %>
+                                                    <%= messages[i].sender.name %>
+                                                </div>
+                                            </li>
+                                        
+                                    <% } else {%>
+                                          
+                                            <li class="clearfix">
+                                                <div class="message-data">
+                                                    <span class="message-data-time"><%= messages[i].createdAt %></span>
+                                                </div>
+                                                <div class="message my-message">
+                                                    <%= messages[i].message %>
+                                                    
+                                                </div>
+                                            </li>
+                                        
+                                    <% } %>
+
+
+                                <% } %>
+                            </ul>
+                        </div>
+                        <div class="chat-message clearfix">
+                            <div class="input-group mb-0">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fa fa-send"></i></span>
+                                </div>
+                                <input id="input" value="" type="text" class="form-control" placeholder="Enter text here...">
+                                <button type="submit" id="btn">Send</button>
+                            </div>
+                        </div>
+                    </div>
+                    <% } %>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io();
+    </script>
+    <script src="/js/script.js"></script>
+</body>
+
+</html>
